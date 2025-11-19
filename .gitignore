@@ -1,2 +1,5 @@
-**/.venv/*
-./input/*
+**/.venv/
+./input/
+**/*.csv
+**/*.zip
+**/*.xlsx
