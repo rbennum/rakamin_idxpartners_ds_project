@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
+import joblib
+import os
 
+from datetime import datetime
 
 def skim_data(data) -> pd.DataFrame:
     """
@@ -13,6 +16,7 @@ def skim_data(data) -> pd.DataFrame:
 
     numeric_cols = set(data.select_dtypes(include=[np.number]).columns)
     numeric_stats = {}
+
     for col in numeric_cols:
         numeric_stats[col] = {
             "neg_%": round((data[col] < 0).mean() * 100, 3),
@@ -37,8 +41,34 @@ def skim_data(data) -> pd.DataFrame:
             ],
         }
     )
-
     print(f"Total duplicate rows: {data.duplicated().sum()}")
     print(f"DF shape: {data.shape}")
-
     return skimmed_data
+
+def save_model(model_object, filename, directory="models"):
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+            print(f"Folder at '{directory}' has been created.")
+
+        filepath = os.path.join(directory, filename)
+        joblib.dump(model_object, filepath)
+        print(f"Model object successfully saved at: {filepath}")
+    except Exception as e:
+        print(f"Error when trying to save the object: {e}")
+
+def load_model(filepath):
+    try:
+        loaded_object = joblib.load(filepath)
+        print(f"Model loaded from: {filepath}")
+        return loaded_object
+    except FileNotFoundError:
+        print(f"Error: File not found at '{filepath}'")
+        return None
+    except Exception as e:
+        print(f"Error when loading object: {e}")
+        return None
+
+def get_time(time: datetime = datetime.now()) -> str:
+    timestamp_str = time.strftime('%Y_%m_%d_%H_%M_%S')
+    return timestamp_str
