@@ -76,6 +76,8 @@ def load_model(filepath) -> Optional[GridSearchCV]:
         return None
 
 
-def get_time(time: datetime = datetime.now()) -> str:
+def get_time(time: Optional[datetime] = None) -> str:
+    if time is None:
+        time = datetime.now()
     timestamp_str = time.strftime("%Y_%m_%d_%H_%M_%S")
     return timestamp_str
