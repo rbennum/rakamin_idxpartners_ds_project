@@ -8,7 +8,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
 
-df_train = pd.read_csv('input/df_train.csv')
+df_train = pd.read_parquet('input/df_train.parquet')
 X = df_train.drop(columns=['loan_status'])
 y = df_train['loan_status']
 

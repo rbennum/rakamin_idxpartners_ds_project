@@ -4,6 +4,10 @@ import joblib
 import os
 
 from datetime import datetime
+from typing import Optional
+
+from sklearn.model_selection import GridSearchCV
+
 
 def skim_data(data) -> pd.DataFrame:
     """
@@ -45,6 +49,7 @@ def skim_data(data) -> pd.DataFrame:
     print(f"DF shape: {data.shape}")
     return skimmed_data
 
+
 def save_model(model_object, filename, directory="models"):
     try:
         if not os.path.exists(directory):
@@ -57,7 +62,8 @@ def save_model(model_object, filename, directory="models"):
     except Exception as e:
         print(f"Error when trying to save the object: {e}")
 
-def load_model(filepath):
+
+def load_model(filepath) -> Optional[GridSearchCV]:
     try:
         loaded_object = joblib.load(filepath)
         print(f"Model loaded from: {filepath}")
@@ -69,6 +75,7 @@ def load_model(filepath):
         print(f"Error when loading object: {e}")
         return None
 
+
 def get_time(time: datetime = datetime.now()) -> str:
-    timestamp_str = time.strftime('%Y_%m_%d_%H_%M_%S')
+    timestamp_str = time.strftime("%Y_%m_%d_%H_%M_%S")
     return timestamp_str
