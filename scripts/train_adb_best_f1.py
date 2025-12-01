@@ -6,7 +6,7 @@ import numpy as np
 
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.model_selection import GridSearchCV, StratifiedKFold, RandomizedSearchCV
+from sklearn.model_selection import StratifiedKFold, RandomizedSearchCV
 from sklearn.feature_selection import SelectFromModel
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
@@ -24,22 +24,7 @@ X = df_train.drop(columns=["loan_status"])
 y = df_train["loan_status"]
 
 # preprocessing pipeline
-numeric_features = [
-    "loan_amnt",
-    "annual_inc",
-    "dti",
-    "delinq_2yrs",
-    "inq_last_6mths",
-    "open_acc",
-    "pub_rec",
-    "revol_bal",
-    "revol_util",
-    "total_acc",
-    "tot_coll_amt",
-    "tot_cur_bal",
-    "total_rev_hi_lim",
-    "credit_history_age",
-]
+numeric_features = X.select_dtypes(include=np.number).columns.tolist()
 categorical_features = [
     "home_ownership",
     "verification_status",
@@ -81,27 +66,48 @@ pipeline = ImbPipeline(
         ("preprocessing", preprocessor),
         ("smote", SMOTE(random_state=29)),
         (
+            "feature_selection",
+            SelectFromModel(estimator=RandomForestClassifier(random_state=23)),
+        ),
+        (
             "classifier",
             AdaBoostClassifier(estimator=custom_base_estimator, random_state=29),
         ),
     ]
 )
+pipeline = ImbPipeline(
+    steps=[
+        ("preprocessing", preprocessor),
+        ("smote", SMOTE(random_state=29)),
+        (
+            "feature_selection",
+            SelectFromModel(estimator=RandomForestClassifier(random_state=23)),
+        ),
+        ("classifier", AdaBoostClassifier(random_state=29)),
+    ]
+)
 param_grid = {
-    "smote__sampling_strategy": [0.75],
-    "classifier__n_estimators": [100],
-    "classifier__learning_rate": [0.1],
-    "classifier__estimator__max_depth": [1],
+    "feature_selection__threshold": ["0.5*median", "0.75*median"],
+    "smote__sampling_strategy": [0.5, 0.75],
+    "classifier__n_estimators": [50, 100, 200],
+    "classifier__learning_rate": [0.01, 0.1],
 }
 
 # customize cv and scorer
 custom_cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=29)
-custom_scorer = make_scorer(recall_score, pos_label=1)
+f1_scorer = make_scorer(f1_score, pos_label=1)
+recall_scorer = make_scorer(recall_score, pos_label=1)
+multiple_scorers = {
+    "f1_score_bad_loan": f1_scorer,
+    "recall_score_bad_loan": recall_scorer,
+}
 
 random_search = RandomizedSearchCV(
     estimator=pipeline,
     param_distributions=param_grid,
     cv=custom_cv,
-    scoring=custom_scorer,
+    scoring=multiple_scorers,
+    refit="recall_score_bad_loan",
     verbose=2,
     n_jobs=-1,
 )
