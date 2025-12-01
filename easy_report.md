@@ -1,7 +1,10 @@
 # Laporan Proyek: Prediksi Gagal Bayar Pinjaman LendingClub
 
 **Nama:** Bening Ranum
+
 **Tanggal:** 1 Desember 2025
+
+**GitHub Link:** [rbennum/rakamin_idxpartners_ds_project](https://github.com/rbennum/rakamin_idxpartners_ds_project)
 
 ---
 
@@ -97,15 +100,15 @@ Hasil performa dari model-model terbaik pada **Test Set** dirangkum dalam tabel 
 
 <center>
 
-![Perbandingan Kurva ROC](/assets/img_01.png)
+![Perbandingan Kurva ROC](assets/img_01.png)
 
 </center>
 
-<center>
-
 Grafik ini mengukur kemampuan model dalam pemisahan pinjaman baik dari pinjaman macet.
 
-![Perbandingan Kurva Precision-Recall](/assets/img_02.png)
+<center>
+
+![Perbandingan Kurva Precision-Recall](assets/img_02.png)
 
 </center>
 
